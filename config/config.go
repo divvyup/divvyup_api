@@ -14,7 +14,8 @@ import (
 	parts of our app will need
 */
 type config struct {
-	Secret string `json:"secret"`
+	Secret    string `json:"secret"`
+	APIPrefix string `json:"api_prefix"`
 }
 
 var globalConfig config
@@ -51,6 +52,8 @@ func AppConfig() {
 			os.Exit(2)
 		}
 
+		fmt.Printf("Configured to use %s as the API prefix\n", color.RedString(globalConfig.APIPrefix))
+
 	} else if env == "production" {
 		fmt.Printf("Starting divvyup api in %s mode...\n", color.GreenString("PRODUCTION"))
 	} else {
@@ -66,4 +69,12 @@ func AppConfig() {
 */
 func Secret() string {
 	return globalConfig.Secret
+}
+
+/*
+	Prefix will allow our routing to be under the proper api versioning
+	scheme
+*/
+func Prefix() string {
+	return globalConfig.APIPrefix
 }

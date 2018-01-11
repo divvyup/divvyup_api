@@ -1,12 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 
+	"github.com/domtheporcupine/divvyup_api/api"
 	"github.com/domtheporcupine/divvyup_api/config"
 )
 
 func main() {
 	config.AppConfig()
-	fmt.Println(config.Secret())
+	router := api.InitRoutes()
+	http.ListenAndServe(":3030", router)
 }

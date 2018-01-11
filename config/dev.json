@@ -1,3 +1,4 @@
 {
-  "secret": "foooooooooooooo barrrrrrrrrrrrrrrrrrrr"
+  "secret": "foooooooooooooo barrrrrrrrrrrrrrrrrrrr",
+  "api_prefix": "/api/v1"
 }
