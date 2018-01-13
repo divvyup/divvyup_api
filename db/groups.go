@@ -43,3 +43,33 @@ func CreateGroup(name string) int64 {
 	}
 	return id
 }
+
+/*
+	AddUserToGroup is a function to add a new user to a group
+
+	return true on success, false otherwise
+*/
+func AddUserToGroup(uid int64, gid int64) bool {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	// Set up for our new group
+	stmt, err := tx.Prepare("insert into membership(userid,groupid) values(?,?)")
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(uid, gid)
+
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	tx.Commit()
+	return true
+}

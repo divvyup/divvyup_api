@@ -36,14 +36,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	eUser := new(models.User)
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&eUser)
-	if db.AuthenticateUser(eUser.Username, eUser.Password) {
+	eUser.ID = db.AuthenticateUser(eUser.Username, eUser.Password)
+	if eUser.ID != -1 {
 		// Username and password matches, time to give them a token
 		// Declare the token we will be giving them
 		token := jwt.New(jwt.SigningMethodHS256)
 
 		claims := token.Claims.(jwt.MapClaims)
-		// Set their userid
-		claims["userid"] = eUser.Username
+		// Set their username and id
+		claims["username"] = eUser.Username
+		claims["id"] = eUser.ID
 		// Make sure the token experies in a reasonable amount of time
 		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 

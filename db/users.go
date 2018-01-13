@@ -75,10 +75,10 @@ func UserExists(uName string) bool {
 	AuthenticateUser is a function to check if a user login
 	is valid or not
 
-	Returns true if credentials are valid, false otherwise
+	Returns the user's id if credentials are valid, -1 otherwise
 */
-func AuthenticateUser(uName string, pass string) bool {
-	rows, err := db.Query("select password,COUNT(*) from users where username = ?", uName)
+func AuthenticateUser(uName string, pass string) int64 {
+	rows, err := db.Query("select id,password,COUNT(*) from users where username = ?", uName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,11 +88,12 @@ func AuthenticateUser(uName string, pass string) bool {
 		fmt.Println("foobar")
 	}
 	for rows.Next() {
+		var id int64
 		var count int
 		var prevpass string
 
-		if err := rows.Scan(&prevpass, &count); err != nil {
-			return false
+		if err := rows.Scan(&id, &prevpass, &count); err != nil {
+			return -1
 		}
 		// There is at least 1 user
 		if count != 0 {
@@ -101,9 +102,9 @@ func AuthenticateUser(uName string, pass string) bool {
 
 			if err == nil {
 				// They mathch!
-				return true
+				return id
 			}
 		}
 	}
-	return false
+	return -1
 }

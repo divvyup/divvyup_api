@@ -5,17 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/domtheporcupine/divvyup_api/models"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/domtheporcupine/divvyup_api/config"
 )
-
-/*
-	UserInfo is the conatiner we use to pass context information
-	down the line after it has been parsed out of the cookie
-*/
-type UserInfo struct {
-	Userid string
-}
 
 /*
 	Validate is the main middleware function. We use it in between all
@@ -48,9 +42,12 @@ func Validate(protectedPage http.Handler) http.HandlerFunc {
 
 		// Grab the tokens claims and pass it into the original request
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			foo := new(UserInfo)
-			foo.Userid = claims["userid"].(string)
-			ctx := context.WithValue(req.Context(), UserInfo{}, *foo)
+
+			currUser := new(models.User)
+			currUser.Username = claims["username"].(string)
+
+			currUser.ID = int64(claims["id"].(float64))
+			ctx := context.WithValue(req.Context(), models.User{}, *currUser)
 			protectedPage.ServeHTTP(w, req.WithContext(ctx))
 		} else {
 
