@@ -2,3 +2,4 @@
 quirks.txt
 # Don't want to give away our environment variables
 *.env.sh
+*.db

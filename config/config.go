@@ -16,6 +16,8 @@ import (
 type config struct {
 	Secret    string `json:"secret"`
 	APIPrefix string `json:"api_prefix"`
+	DBUrl     string `json:"db_url"`
+	Schema    string `json:"schema_file"`
 }
 
 var globalConfig config
@@ -26,6 +28,7 @@ AppConfig reads our environment variables and configures the following:
 	2. database stuff
 */
 func AppConfig() {
+	fmt.Printf("Startingc configuration...\t\t\t")
 	env := os.Getenv("DIVVYUP_API_MODE")
 
 	if env == "" {
@@ -34,7 +37,7 @@ func AppConfig() {
 	}
 
 	if env == "development" {
-		fmt.Printf("Starting divvyup api in %s mode...\n", color.GreenString("DEVELOPMENT"))
+		fmt.Printf("Starting divvyup api in %s mode.\n", color.GreenString("DEVELOPMENT"))
 
 		// Read and then parse our config file
 		conf, err := ioutil.ReadFile("config/dev.json")
@@ -53,6 +56,8 @@ func AppConfig() {
 		}
 
 		fmt.Printf("Configured to use %s as the API prefix\n", color.RedString(globalConfig.APIPrefix))
+
+		fmt.Printf("Connected to database with URL:%s\n", color.BlueString(globalConfig.DBUrl))
 
 	} else if env == "production" {
 		fmt.Printf("Starting divvyup api in %s mode...\n", color.GreenString("PRODUCTION"))
@@ -77,4 +82,20 @@ func Secret() string {
 */
 func Prefix() string {
 	return globalConfig.APIPrefix
+}
+
+/*
+	DBUrl will allow us to specify which database we want to connect to
+*/
+func DBUrl() string {
+	return globalConfig.DBUrl
+}
+
+/*
+	SchemaFile will allow us to communicate which schema we would like
+	to use, it will allow us to maintain multiple versions and make
+	developing easier
+*/
+func SchemaFile() string {
+	return globalConfig.Schema
 }
