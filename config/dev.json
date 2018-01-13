@@ -2,5 +2,5 @@
   "secret": "foooooooooooooo barrrrrrrrrrrrrrrrrrrr",
   "api_prefix": "/api/v1",
   "db_url" : "127.0.0.1:27017",
-  "schema_file": "schema.sql"
+  "schema_file": "schema.dev.sql"
 }

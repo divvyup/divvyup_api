@@ -28,7 +28,7 @@ AppConfig reads our environment variables and configures the following:
 	2. database stuff
 */
 func AppConfig() {
-	fmt.Printf("Startingc configuration...\t\t\t")
+	fmt.Printf("Starting configuration...\t\t\t")
 	env := os.Getenv("DIVVYUP_API_MODE")
 
 	if env == "" {
@@ -37,7 +37,7 @@ func AppConfig() {
 	}
 
 	if env == "development" {
-		fmt.Printf("Starting divvyup api in %s mode.\n", color.GreenString("DEVELOPMENT"))
+		fmt.Printf("Starting api in %s mode.\n", color.GreenString("DEVELOPMENT"))
 
 		// Read and then parse our config file
 		conf, err := ioutil.ReadFile("config/dev.json")

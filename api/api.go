@@ -2,13 +2,8 @@ package api
 
 import (
 	"github.com/domtheporcupine/divvyup_api/config"
-	"github.com/domtheporcupine/divvyup_api/models"
 	"github.com/gorilla/mux"
 )
-
-// AllUsers will contain our users since we are not using a database
-// yet
-var AllUsers = []models.User{}
 
 /*
 	InitRoutes is the backbone of our api, it organizes everything
