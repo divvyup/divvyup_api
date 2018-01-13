@@ -17,6 +17,7 @@ type config struct {
 	Secret    string `json:"secret"`
 	APIPrefix string `json:"api_prefix"`
 	DBUrl     string `json:"db_url"`
+	DBDriver  string `json:"db_driver"`
 	Schema    string `json:"schema_file"`
 }
 
@@ -28,7 +29,7 @@ AppConfig reads our environment variables and configures the following:
 	2. database stuff
 */
 func AppConfig() {
-	fmt.Printf("Starting configuration...\t\t\t")
+	fmt.Println("Starting configuration...")
 	env := os.Getenv("DIVVYUP_API_MODE")
 
 	if env == "" {
@@ -37,7 +38,7 @@ func AppConfig() {
 	}
 
 	if env == "development" {
-		fmt.Printf("Starting api in %s mode.\n", color.GreenString("DEVELOPMENT"))
+		fmt.Printf("Configured API mode...\t\t\t\t%s\n", color.GreenString("DEVELOPMENT"))
 
 		// Read and then parse our config file
 		conf, err := ioutil.ReadFile("config/dev.json")
@@ -55,9 +56,11 @@ func AppConfig() {
 			os.Exit(2)
 		}
 
-		fmt.Printf("Configured to use %s as the API prefix\n", color.RedString(globalConfig.APIPrefix))
+		fmt.Printf("Configured API prefix...\t\t\t%s\n", color.RedString(globalConfig.APIPrefix))
 
-		fmt.Printf("Connected to database with URL:%s\n", color.BlueString(globalConfig.DBUrl))
+		fmt.Printf("Configured databse URL...\t\t\t%s\n", color.BlueString(globalConfig.DBUrl))
+
+		fmt.Printf("Using databse driver...\t\t\t\t%s\n", color.HiBlueString(globalConfig.DBDriver))
 
 	} else if env == "production" {
 		fmt.Printf("Starting divvyup api in %s mode...\n", color.GreenString("PRODUCTION"))
