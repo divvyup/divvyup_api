@@ -95,6 +95,14 @@ func DBUrl() string {
 }
 
 /*
+	DBDriver will allow us to easily switch between sql databases, i dont
+	always want to run mysql locally so sometimes sqlite3 will suffice
+*/
+func DBDriver() string {
+	return globalConfig.DBDriver
+}
+
+/*
 	SchemaFile will allow us to communicate which schema we would like
 	to use, it will allow us to maintain multiple versions and make
 	developing easier

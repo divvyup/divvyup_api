@@ -1,7 +1,7 @@
 {
   "secret": "foooooooooooooo barrrrrrrrrrrrrrrrrrrr",
   "api_prefix": "/api/v1",
-  "db_url" : "N/A",
+  "db_url" : "./divvyup_db.db",
   "db_driver": "sqlite3",
   "schema_file": "schema.dev.sql"
 }

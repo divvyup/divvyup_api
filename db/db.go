@@ -17,9 +17,12 @@ var db *sql.DB
 	our database
 */
 func Init() {
-	os.Remove("./divvyup_db.db")
+	if config.DBDriver() == "sqlite3" {
+		os.Remove(config.DBUrl())
+	}
+
 	var err error
-	db, err = sql.Open("sqlite3", "./divvyup_db.db")
+	db, err = sql.Open(config.DBDriver(), config.DBUrl())
 
 	if err != nil {
 		panic(err)
