@@ -72,8 +72,8 @@ func AppConfig() {
 	Secret will allow other parts of the application to acccess our
 	secret. This will be used for signing jwt's etc.
 */
-func Secret() string {
-	return globalConfig.Secret
+func Secret() []byte {
+	return []byte(globalConfig.Secret)
 }
 
 /*

@@ -47,7 +47,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// Make sure the token experies in a reasonable amount of time
 		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-		tokenString, err := token.SignedString([]byte(config.Secret()))
+		tokenString, err := token.SignedString(config.Secret())
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -15,6 +15,6 @@ func InitRoutes() *mux.Router {
 	// Here we use our config to define what our api version should be
 	subrouter := router.PathPrefix(config.Prefix()).Subrouter()
 	router = AddAuthRoutes(subrouter)
-
+	router = AddHelloRoutes(subrouter)
 	return router
 }
