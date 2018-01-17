@@ -29,10 +29,10 @@ func createGroupHandler(w http.ResponseWriter, r *http.Request) {
 	// We will be responding with json
 	w.Header().Set("Content-Type", "application/json")
 
-	// Need the current users info
+	// First we need the current users info
 	usr, _ := r.Context().Value(models.User{}).(models.User)
 
-	// First we need to parse out our new group's info
+	// Next we need to parse out our new group's info
 	nGroup := new(models.Group)
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&nGroup)
@@ -43,10 +43,16 @@ func createGroupHandler(w http.ResponseWriter, r *http.Request) {
 	// Check to see if we were succeful
 	if gid != -1 {
 		// If we were succeful we need to add ourselves to the group
-		db.AddUserToGroup(usr.ID, gid)
-		res, _ := json.Marshal(Message{Message: "Group created successfully.", Reason: "success"})
-		w.Write(res)
-		return
+		if db.AddUserToGroup(usr.ID, gid) {
+			res, _ := json.Marshal(Message{Message: "Group created successfully.", Reason: "success"})
+			w.Write(res)
+			return
+		}
+
+		// If we could not add the user to the group
+		// delete the group and then return an error
+		db.DeleteGroup(gid)
+
 	}
 	w.WriteHeader(http.StatusAccepted)
 	res, _ := json.Marshal(Message{Message: "Failed to create group.", Reason: "failure"})
