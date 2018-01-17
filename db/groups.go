@@ -51,25 +51,53 @@ func CreateGroup(name string) int64 {
 */
 func AddUserToGroup(uid int64, gid int64) bool {
 	tx, err := db.Begin()
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
+	CheckErr(err)
 
 	// Set up for our new group
 	stmt, err := tx.Prepare("insert into membership(userid,groupid) values(?,?)")
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
+	CheckErr(err)
+
 	defer stmt.Close()
 
 	_, err = stmt.Exec(uid, gid)
 
-	if err != nil {
-		log.Fatal(err)
+	CheckErr(err)
+
+	tx.Commit()
+	return true
+}
+
+/*
+	DeleteGroup is a function to delete and existing group
+
+	It is slightly more complicated than a simple delete because
+	we must go down the chain and delete *EVERYTHING* associated
+	with the account, this includes all receipts, and all those
+	receipts items.
+
+	return true on success, false otherwise
+*/
+func DeleteGroup(gid int64) bool {
+	// Sanity check that the number is
+	// greater than 0
+	if gid < 1 {
 		return false
 	}
-	tx.Commit()
+
+	// The group might exist so try to delete it
+	stmt, err := db.Prepare("delete from groups where id=?")
+	CheckErr(err)
+
+	res, err := stmt.Exec(gid)
+
+	// Now we have to get all of the receipts that
+	// were associated with the account
+
+	// In this case we don't want to kill our
+	// entire program if the wrong gid is given
+
+	_, err = res.RowsAffected()
+	CheckErr(err)
+
 	return true
 }
