@@ -33,7 +33,6 @@ func InsertReceiptData() {
 		fmt.Println(len(item))
 		if len(item) < 8 && !IsLetter(item) {
 			foo := reg.ReplaceAllString(item, "")
-			//fmt.Println(foo)
 			price, _ := strconv.ParseFloat(foo, 10)
 			prices = append(prices, price)
 		} else if !strings.Contains(item, "@") {
@@ -55,8 +54,14 @@ func InsertReceiptData() {
 	fmt.Println("-----------------------------------")
 	fmt.Print("Calculated total: $")
 	fmt.Println(total)
+
 	os.Exit(1)
 }
+
+/*
+	IsLetter is a function to tell us if
+	the string s contains only letters
+*/
 func IsLetter(s string) bool {
 	for _, r := range s {
 		if !unicode.IsLetter(r) {
