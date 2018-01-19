@@ -81,6 +81,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	// We will be responding with json
 	w.Header().Set("Content-Type", "application/json")
+	// Check to make sure that we are not running in
+	// demo mode
+	if config.Demo() {
+		res, _ := json.Marshal(Message{Message: "Signup currently disabled.", Reason: "signup_disabled"})
+		w.Write(res)
+		return
+	}
+
 	// Parse out the requested information
 	nUser := new(models.User)
 	decoder := json.NewDecoder(r.Body)

@@ -19,6 +19,7 @@ type config struct {
 	DBUrl     string `json:"db_url"`
 	DBDriver  string `json:"db_driver"`
 	Schema    string `json:"schema_file"`
+	Demo      bool   `json:"demo"`
 }
 
 var globalConfig config
@@ -109,4 +110,13 @@ func DBDriver() string {
 */
 func SchemaFile() string {
 	return globalConfig.Schema
+}
+
+/*
+	Demo will allow us to turn on and off user signup. This is useful
+	for something like the demo site. Where we have a single account
+	that people can login to with pre configured groups and receipts
+*/
+func Demo() bool {
+	return globalConfig.Demo
 }
