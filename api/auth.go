@@ -17,6 +17,10 @@ import (
 /*
 	AddAuthRoutes is a function that will add all of the functionality of
 	our authentication related routes to the app
+
+	AddAuthRoutes adds the following functionality:
+	1. create a new account			/auth/register		POST
+	2. log in to an account			/auth/login				POST
 */
 func AddAuthRoutes(router *mux.Router) *mux.Router {
 
@@ -101,7 +105,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if db.CreateUser(nUser.Username, nUser.Password) {
+	if nid := db.CreateUser(nUser.Username, nUser.Password); nid != -1 {
 		res, _ := json.Marshal(Message{Message: "Successfully created user.", Reason: "success"})
 		w.Write(res)
 	} else {

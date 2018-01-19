@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/domtheporcupine/divvyup_api/db"
 
@@ -21,7 +22,7 @@ import (
 func AddGroupRoutes(router *mux.Router) *mux.Router {
 
 	router.Path("/group").HandlerFunc(Validate(http.HandlerFunc(createGroupHandler))).Methods("POST")
-
+	router.Path("/group/{id}").HandlerFunc(Validate(http.HandlerFunc(getGroupInfoHandler))).Methods("GET")
 	return router
 }
 
@@ -58,4 +59,56 @@ func createGroupHandler(w http.ResponseWriter, r *http.Request) {
 	res, _ := json.Marshal(Message{Message: "Failed to create group.", Reason: "failure"})
 	w.Write(res)
 
+}
+
+/*
+	Given a valid group id this route responds with a json
+	object in the form:
+
+	{
+		"name": "group_name"
+		"id": "group_id"
+		"members": [
+			{"name": "user_name", "balance": "-42"},
+			{"name": "user_2_name", "balance": "42"}
+		]
+	}
+
+*/
+
+func getGroupInfoHandler(w http.ResponseWriter, r *http.Request) {
+	// We will be responding with json
+	w.Header().Set("Content-Type", "application/json")
+	// Pull out the group id
+	vars := mux.Vars(r)
+	groupID, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		// We couldn't parse out the id
+		res, _ := json.Marshal(Message{Message: "Invalid group ID.", Reason: "invalid_id"})
+		w.Write(res)
+		return
+	}
+	// Get the current users id
+	usr, _ := r.Context().Value(models.User{}).(models.User)
+
+	// Validate that the user is a member of the group
+	if !db.IsMember(usr.ID, groupID) {
+		res, _ := json.Marshal(Message{Message: "You do not belong to a group with that ID.", Reason: "invalid_id"})
+		w.Write(res)
+		return
+	}
+
+	// By now we know that the user is a member of the group
+	// so actually pull out the important information and send
+	// it back to the user
+
+	resp := new(models.GroupJSON)
+	resp.Name = db.GroupName(groupID)
+	resp.ID = groupID
+	resp.Members = db.GroupBalances(groupID)
+
+	res, _ := json.Marshal(resp)
+	w.Write(res)
+	return
 }
