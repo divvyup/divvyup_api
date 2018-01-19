@@ -1,18 +1,21 @@
 package examples
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/domtheporcupine/divvyup_api/models"
 )
 
-// InsertReceiptData is
-func InsertReceiptData() {
+// ExampleItems will be used in our demo version
+var ExampleItems = []models.Item{}
+
+// ParseReceiptData is
+func ParseReceiptData() {
 	data, err := ioutil.ReadFile("examples/googlevision.txt")
 
 	if err != nil {
@@ -30,7 +33,6 @@ func InsertReceiptData() {
 	iterms := strings.Split(string(data), "\n")
 
 	for _, item := range iterms {
-		fmt.Println(len(item))
 		if len(item) < 8 && !IsLetter(item) {
 			foo := reg.ReplaceAllString(item, "")
 			price, _ := strconv.ParseFloat(foo, 10)
@@ -39,23 +41,15 @@ func InsertReceiptData() {
 			items = append(items, item)
 		}
 	}
-	fmt.Println(len(prices))
-	fmt.Println(len(items))
-	for index, item := range items {
-		fmt.Print(item + ": $")
-		fmt.Println(prices[index])
-	}
-	total := 0.0
-	for _, price := range prices {
-		total += price
-	}
-	// because we add the subtotal divide in half
-	total = total / 2
-	fmt.Println("-----------------------------------")
-	fmt.Print("Calculated total: $")
-	fmt.Println(total)
 
-	os.Exit(1)
+	for index, item := range items {
+		nItem := models.Item{}
+		nItem.Price = prices[index]
+		nItem.Name = item
+		ExampleItems = append(ExampleItems, nItem)
+	}
+
+	// os.Exit(1)
 }
 
 /*
@@ -69,4 +63,13 @@ func IsLetter(s string) bool {
 		}
 	}
 	return true
+}
+
+/*
+	GetExampleItems returns a list of Items
+	parsed from the google vision response to
+	the picture of the receipt in this directory
+*/
+func GetExampleItems() []models.Item {
+	return ExampleItems
 }
