@@ -9,7 +9,7 @@ import "log"
 
 	return true on success, false otherwise
 */
-func CreateItem(rid int64, name string) bool {
+func CreateItem(rid int64, name string, price float64) bool {
 	// Make sure the rid is valid
 	if !ValidID(rid) {
 		return false
@@ -22,14 +22,14 @@ func CreateItem(rid int64, name string) bool {
 		log.Fatal(err)
 		return false
 	}
-	stmt, err := tx.Prepare("insert into items(receiptid, name) values(?, ?)")
+	stmt, err := tx.Prepare("insert into items(receiptid, name, price) values(?, ?, ?)")
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(rid, name)
+	_, err = stmt.Exec(rid, name, price)
 	if err != nil {
 		log.Fatal(err)
 		return false

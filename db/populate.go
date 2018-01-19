@@ -1,6 +1,10 @@
 package db
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"github.com/domtheporcupine/divvyup_api/examples"
+)
 
 // This is starting to look and more like a test
 // file but we are going to leave it for now
@@ -41,6 +45,15 @@ func Populate() {
 	// Add everyone to the group of friends
 	for i := 0; i < 5; i++ {
 		AddUserToGroup(userids[i], groupids[1])
+	}
+
+	// Create a fake receipt
+	receiptid := CreateReceipt(groupids[0])
+
+	// Add some sample items to the receipt
+	items := examples.GetExampleItems()
+	for _, item := range items {
+		CreateItem(receiptid, item.Name, item.Price)
 	}
 
 }

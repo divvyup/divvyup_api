@@ -10,31 +10,37 @@ import (
 
 	Return true on success, failure otherwise
 */
-func CreateReceipt(gid int64) bool {
+func CreateReceipt(gid int64) int64 {
 	// Sanity check on group id
 	if !ValidID(gid) {
-		return false
+		return -1
 	}
 
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
+
 	stmt, err := tx.Prepare("insert into receipts(groupid) values(?)")
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(gid)
+	res, err := stmt.Exec(gid)
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
+
 	tx.Commit()
-	return true
+
+	// Finally grab the new user id!
+	id, err := res.LastInsertId()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
 }
 
 /*
