@@ -78,26 +78,72 @@ func AddUserToGroup(uid int64, gid int64) bool {
 	return true on success, false otherwise
 */
 func DeleteGroup(gid int64) bool {
-	// Sanity check that the number is
-	// greater than 0
-	if gid < 1 {
-		return false
-	}
+	// Sanity check that the id is valid
+	ValidID(gid)
 
 	// The group might exist so try to delete it
-	stmt, err := db.Prepare("delete from groups where id=?")
-	CheckErr(err)
-
-	res, err := stmt.Exec(gid)
-
+	DeleteByID(DelTableStrings.Group, gid)
 	// Now we have to get all of the receipts that
 	// were associated with the account
 
 	// In this case we don't want to kill our
 	// entire program if the wrong gid is given
 
-	_, err = res.RowsAffected()
-	CheckErr(err)
-
 	return true
+}
+
+/*
+	GroupName is a function that returns the name of
+	a group given a group id
+
+	returns the name on success, the empty string otherwise
+*/
+func GroupName(gid int64) string {
+	rows, err := db.Query("select name from groups where id = ?", gid)
+	// If for some reason there is an error
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+
+		if err := rows.Scan(&name); err != nil {
+			// Something has gone wrong
+			log.Fatal(err)
+		}
+
+		return name
+	}
+
+	return ""
+}
+
+/*
+	GroupMembers is a function that returns
+	a slice of id's that belong to the members
+	of the group
+*/
+func GroupMembers(gid int64) []int64 {
+	ids := []int64{}
+	rows, err := db.Query("select userid from membership where groupid = ?", gid)
+	// If for some reason there is an error
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int64
+
+		if err := rows.Scan(&id); err != nil {
+			// Something has gone wrong
+			log.Fatal(err)
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids
 }

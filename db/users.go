@@ -11,35 +11,43 @@ import (
 	CreateUser is a function to create a user in the database
 	given a username and a password
 
-	Return true on success, failure otherwise
+	Return new user id on success, -1 otherwise
 */
-func CreateUser(uName string, pass string) bool {
+// TODO: checks on password length/strength
+func CreateUser(uName string, pass string) int64 {
 	// First let's hash the password
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(pass), 14)
 
 	if err != nil {
-		return false
+		return -1
 	}
 
 	tx, err := db.Begin()
+
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
+
 	stmt, err := tx.Prepare("insert into users(username, password) values(?, ?)")
+
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(uName, string(hashPass[:]))
+	res, err := stmt.Exec(uName, string(hashPass[:]))
 	if err != nil {
 		log.Fatal(err)
-		return false
 	}
 	tx.Commit()
-	return true
+
+	// Finally grab the new user id!
+	id, err := res.LastInsertId()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
 }
 
 /*
@@ -107,4 +115,69 @@ func AuthenticateUser(uName string, pass string) int64 {
 		}
 	}
 	return -1
+}
+
+/*
+	IsMember is a function to determine
+	if a given user is a member of a specified
+	group
+
+	return true if the user is a member, false otherwise
+*/
+func IsMember(uid int64, gid int64) bool {
+	// First validate the ids
+	if !ValidID(uid) || !ValidID(gid) {
+		return false
+	}
+
+	rows, err := db.Query("select COUNT(*) from membership where userid = ? and groupid =?", uid, gid)
+	// If for some reason there is an error
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var count int
+
+		if err := rows.Scan(&count); err != nil {
+			// Something has gone wrong
+			log.Fatal(err)
+		}
+
+		if count != 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
+/*
+	UserName is a function to get a users username
+	given a user id
+
+	returns the users username on success, the
+	empty string otherwise
+*/
+func UserName(uid int64) string {
+	rows, err := db.Query("select username from users where id = ?", uid)
+	// If for some reason there is an error
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+
+		if err := rows.Scan(&name); err != nil {
+			// Something has gone wrong
+			log.Fatal(err)
+		}
+
+		return name
+	}
+
+	return ""
 }

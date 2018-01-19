@@ -26,7 +26,9 @@ type TableStrings struct {
 }
 
 var db *sql.DB
-var delTableStrings *TableStrings
+
+// DelTableStrings allows
+var DelTableStrings *TableStrings
 
 /*
 	Init will set up all the necessary things to connect to
@@ -62,14 +64,14 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-	delTableStrings = new(TableStrings)
+	DelTableStrings = new(TableStrings)
 
 	// Initialize all of our new strings
-	delTableStrings.User = "delete from users where id = ?"
-	delTableStrings.Membership = "delete from membership where id = ?"
-	delTableStrings.Group = "delete from groups where id = ?"
-	delTableStrings.Receipt = "delete from receipts where id = ?"
-	delTableStrings.Item = "delete from items where id = ?s"
+	DelTableStrings.User = "delete from users where id = ?"
+	DelTableStrings.Membership = "delete from membership where id = ?"
+	DelTableStrings.Group = "delete from groups where id = ?"
+	DelTableStrings.Receipt = "delete from receipts where id = ?"
+	DelTableStrings.Item = "delete from items where id = ?s"
 
 	fmt.Println("\t\t\tDone!")
 }
