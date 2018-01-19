@@ -1,10 +1,10 @@
 create table users (id integer not null primary key, username text UNIQUE, password text);
 create table groups (id integer not null primary key, name text);
-create table membership (userid integer not null, groupid integer not null);
+create table membership (userid integer not null, groupid integer not null, constraint pk_membership primary key(userid, groupid));
 create table receipts (id integer not null primary key, groupid integer not null);
 create table items (id integer not null primary key, receiptid integer not null, name text);
 create table rules (id integer not null primary key, groupid integer not null, name text);
-create table balances (groupid integer not null, userid integer not null, balance real)
+create table balances (groupid integer not null, userid integer not null, balance real);
 delete from users;
 delete from groups;
 delete from membership;
