@@ -11,6 +11,7 @@ import (
 func main() {
 	config.AppConfig()
 	db.Init()
+	db.Populate()
 	router := api.InitRoutes()
 	http.ListenAndServe(":3030", router)
 }
