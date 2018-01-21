@@ -69,3 +69,30 @@ func BelongToGroup(gid int64) []int64 {
 
 	return rids
 }
+
+/*
+	BelongToUser is a function that determines if
+	a given user can view a receipt
+*/
+func BelongToUser(uid int64, rid int64) bool {
+	if !ValidID(rid) || !ValidID(uid) {
+		return false
+	}
+
+	rows, err := db.Query("select COUNT(*) from groups inner join receipts on receipts.groupid = groups.id inner join membership on groups.id = membership.groupid inner join users on users.id = membership.userid where users.id = ? and receipts.id = ?", uid, rid)
+	// If for some reason there is an error
+	CheckErr(err)
+	defer rows.Close()
+
+	for rows.Next() {
+		var count int64
+		if err := rows.Scan(&count); err != nil {
+			if count == 1 {
+				return true
+			}
+		}
+	}
+
+	return false
+
+}

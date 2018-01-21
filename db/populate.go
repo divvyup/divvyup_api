@@ -47,8 +47,9 @@ func Populate() {
 		AddUserToGroup(userids[i], groupids[1])
 	}
 
-	// Create a fake receipt
+	// Create a fake receipt for each group
 	receiptid := CreateReceipt(groupids[0])
+	CreateReceipt(groupids[1])
 
 	// Add some sample items to the receipt
 	items := examples.GetExampleItems()
