@@ -21,8 +21,8 @@ import (
 */
 func AddGroupRoutes(router *mux.Router) *mux.Router {
 
-	router.Path("/group").HandlerFunc(Validate(http.HandlerFunc(createGroupHandler))).Methods("POST")
-	router.Path("/group/{id}").HandlerFunc(Validate(http.HandlerFunc(getGroupInfoHandler))).Methods("GET")
+	router.Path("/group").HandlerFunc(Validate(createGroupHandler)).Methods("POST")
+	router.Path("/group/{id}").HandlerFunc(Validate(getGroupInfoHandler)).Methods("GET")
 	return router
 }
 

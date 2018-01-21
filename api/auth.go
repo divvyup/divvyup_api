@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -23,9 +24,11 @@ import (
 	2. log in to an account			/auth/login				POST
 */
 func AddAuthRoutes(router *mux.Router) *mux.Router {
-
-	router.HandleFunc("/auth/login", loginHandler).Methods("POST")
-	router.HandleFunc("/auth/register", registerHandler).Methods("POST")
+	// Force all preflight checks through our preflight function
+	// router.HandleFunc("/auth/login", Preflight).Methods("OPTIONS")
+	router.HandleFunc("/auth/login", CORS(loginHandler)).Methods("POST", "OPTIONS")
+	// router.HandleFunc("/auth/", Preflight).Methods("OPTIONS")
+	router.HandleFunc("/auth/register", CORS(registerHandler)).Methods("POST")
 	return router
 }
 
@@ -33,13 +36,12 @@ func AddAuthRoutes(router *mux.Router) *mux.Router {
 	Login Handler
 */
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	// We will be responding with json
-	w.Header().Set("Content-Type", "application/json")
 
 	// Parse out the login info
 	eUser := new(models.User)
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&eUser)
+	fmt.Println(eUser.Username)
 	eUser.ID = db.AuthenticateUser(eUser.Username, eUser.Password)
 	if eUser.ID != -1 {
 		// Username and password matches, time to give them a token
