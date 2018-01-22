@@ -15,5 +15,5 @@ func main() {
 	examples.ParseReceiptData()
 	db.Populate()
 	router := api.InitRoutes()
-	http.ListenAndServe(":3030", router)
+	http.ListenAndServe(":3088", router)
 }
