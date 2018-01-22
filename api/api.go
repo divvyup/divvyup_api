@@ -27,7 +27,7 @@ func InitRoutes() *mux.Router {
 
 func Preflight(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8080")
+	w.Header().Set("Access-Control-Allow-Origin", config.Host())
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Request-Headers", "X-Requested-With")
 	w.Header().Set("Access-Control-ALlow-Headers", "content-type")

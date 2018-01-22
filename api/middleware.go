@@ -27,7 +27,7 @@ func Validate(page Middleware) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8080")
+		w.Header().Set("Access-Control-Allow-Origin", config.Host())
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Request-Headers", "X-Requested-With")
 		// If no Auth cookie is set then return a 404 not found
@@ -120,7 +120,7 @@ func CORS(page Middleware) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// We will be responding with json
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8080")
+		w.Header().Set("Access-Control-Allow-Origin", config.Host())
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Request-Headers", "X-Requested-With")
 		npage := http.HandlerFunc(page)
