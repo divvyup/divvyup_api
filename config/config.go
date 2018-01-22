@@ -20,6 +20,7 @@ type config struct {
 	DBDriver  string `json:"db_driver"`
 	Schema    string `json:"schema_file"`
 	Demo      bool   `json:"demo"`
+	Host      string `json:"host"`
 }
 
 var globalConfig config
@@ -31,44 +32,63 @@ AppConfig reads our environment variables and configures the following:
 */
 func AppConfig() {
 	fmt.Println("Starting configuration...")
-	env := os.Getenv("DIVVYUP_API_MODE")
+	env := os.Getenv("DIVVYUP_HOST")
 
 	if env == "" {
-		fmt.Println("No divvyup environment variable specified.")
+		fmt.Println("No divvyup host environment variable specified.")
 		os.Exit(2)
 	}
+
+	globalConfig.Host = env
+
+	env = os.Getenv("DIVVYUP_API_MODE")
+
+	if env == "" {
+		fmt.Println("No divvyup api environment variable specified.")
+		os.Exit(2)
+	}
+
+	var conf = []byte{}
+	var mode string
+	var err error
 
 	if env == "development" {
-		fmt.Printf("Configured API mode...\t\t\t\t%s\n", color.GreenString("DEVELOPMENT"))
-
 		// Read and then parse our config file
-		conf, err := ioutil.ReadFile("config/dev.json")
-
-		if err != nil {
-			fmt.Println("Error reading development config file.")
-			os.Exit(2)
-		}
-
-		// Parse out some useful information
-		jsone := json.Unmarshal(conf, &globalConfig)
-
-		if jsone != nil {
-			fmt.Println("Configuration file does not have the proper structure.")
-			os.Exit(2)
-		}
-
-		fmt.Printf("Configured API prefix...\t\t\t%s\n", color.RedString(globalConfig.APIPrefix))
-
-		fmt.Printf("Configured databse URL...\t\t\t%s\n", color.BlueString(globalConfig.DBUrl))
-
-		fmt.Printf("Using databse driver...\t\t\t\t%s\n", color.HiBlueString(globalConfig.DBDriver))
-
+		conf, err = ioutil.ReadFile("config/dev.json")
+		mode = "DEVELOPMENT"
+	} else if env == "demo" {
+		conf, err = ioutil.ReadFile("config/demo.json")
+		mode = "DEMO"
 	} else if env == "production" {
-		fmt.Printf("Starting divvyup api in %s mode...\n", color.GreenString("PRODUCTION"))
+		conf, err = ioutil.ReadFile("config/prod.json")
+		mode = "PRODUCTION"
 	} else {
-		fmt.Println("Invalid api mode given.")
+		fmt.Println("Invalid configuration mode.")
 		os.Exit(2)
 	}
+
+	fmt.Printf("Configuring API mode...\t\t\t\t%s\n", color.GreenString(mode))
+
+	if err != nil {
+		fmt.Println("Error reading development config file.")
+		os.Exit(2)
+	}
+
+	// Parse out some useful information
+	jsone := json.Unmarshal(conf, &globalConfig)
+
+	if jsone != nil {
+		fmt.Println("Configuration file does not have the proper structure.")
+		os.Exit(2)
+	}
+
+	fmt.Printf("Configured API prefix...\t\t\t%s\n", color.RedString(globalConfig.APIPrefix))
+
+	fmt.Printf("Configured databse URL...\t\t\t%s\n", color.BlueString(globalConfig.DBUrl))
+
+	fmt.Printf("Using databse driver...\t\t\t\t%s\n", color.HiBlueString(globalConfig.DBDriver))
+
+	fmt.Printf("Using allowed origing url...\t\t\t%s\n", color.HiMagentaString(globalConfig.Host))
 
 }
 
@@ -119,4 +139,12 @@ func SchemaFile() string {
 */
 func Demo() bool {
 	return globalConfig.Demo
+}
+
+/*
+	Host will allow us to respond with the Access-Origin-Allowed-Header
+	that we need for whatever we are currently running as
+*/
+func Host() string {
+	return globalConfig.Host
 }
