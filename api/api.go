@@ -22,12 +22,13 @@ func InitRoutes() *mux.Router {
 	router = AddGroupRoutes(subrouter)
 	router = AddItemRoutes(subrouter)
 	router = AddUserRoutes(subrouter)
+	router = AddReceiptRoutes(subrouter)
 	return router
 }
 
 func Preflight(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "http://demo.divvyup.doms.land")
+	w.Header().Set("Access-Control-Allow-Origin", config.Host())
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Request-Headers", "X-Requested-With")
 	w.Header().Set("Access-Control-ALlow-Headers", "content-type")

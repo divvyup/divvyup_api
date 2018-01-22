@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,7 +22,8 @@ import (
 func AddGroupRoutes(router *mux.Router) *mux.Router {
 
 	router.Path("/group").HandlerFunc(Validate(createGroupHandler)).Methods("POST")
-	router.Path("/group/{id}").HandlerFunc(Validate(getGroupInfoHandler)).Methods("GET")
+	router.Path("/group/{id}").HandlerFunc(ValidateWithGroup(getGroupInfoHandler)).Methods("GET")
+	router.Path("/group/{id}/receipts").HandlerFunc(ValidateWithGroup(getGroupReceiptsHandler)).Methods("GET")
 	return router
 }
 
@@ -78,32 +78,20 @@ func createGroupHandler(w http.ResponseWriter, r *http.Request) {
 */
 
 func getGroupInfoHandler(w http.ResponseWriter, r *http.Request) {
-	// We will be responding with json
 	w.Header().Set("Content-Type", "application/json")
 	// Pull out the group id
 	vars := mux.Vars(r)
 	groupID, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
-		fmt.Println(err.Error())
 		// We couldn't parse out the id
 		res, _ := json.Marshal(Message{Message: "Invalid group ID.", Reason: "invalid_id"})
 		w.Write(res)
 		return
 	}
-	// Get the current users id
-	usr, _ := r.Context().Value(models.User{}).(models.User)
 
-	// Validate that the user is a member of the group
-	if !db.IsMember(usr.ID, groupID) {
-		res, _ := json.Marshal(Message{Message: "You do not belong to a group with that ID.", Reason: "invalid_id"})
-		w.Write(res)
-		return
-	}
-
-	// By now we know that the user is a member of the group
-	// so actually pull out the important information and send
-	// it back to the user
+	// Pull out the important information and send it back to the
+	// user
 
 	resp := new(models.GroupJSON)
 	resp.Name = db.GroupName(groupID)
@@ -113,4 +101,30 @@ func getGroupInfoHandler(w http.ResponseWriter, r *http.Request) {
 	res, _ := json.Marshal(resp)
 	w.Write(res)
 	return
+}
+
+/*
+	Given a valid group id this route responds with an array of receipt
+	ids that belong to this group. This allows for the front end to
+	pageinate
+
+	{
+		"receipts": [1,2,3,4]
+	}
+*/
+func getGroupReceiptsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	// Pull out the group id
+	vars := mux.Vars(r)
+	groupID, err := strconv.ParseInt(vars["id"], 10, 64)
+	if err != nil {
+		res, _ := json.Marshal(Message{Message: "Invalid group ID.", Reason: "invalid_id"})
+		w.Write(res)
+		return
+	}
+	receiptIDs := db.BelongToGroup(groupID)
+	res, _ := json.Marshal(models.ReceiptsJSON{Receipts: receiptIDs})
+	w.Write(res)
+	return
+
 }

@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/domtheporcupine/divvyup_api/db"
 
@@ -19,7 +20,7 @@ import (
 */
 func AddReceiptRoutes(router *mux.Router) *mux.Router {
 	// Add all our routes and handler functions
-	router.Path("/receipt").HandlerFunc(ValidateWithGroup(http.HandlerFunc(createReceiptHandler))).Methods("POST")
+	router.Path("/receipt").HandlerFunc(ValidateWithGroup(createReceiptHandler)).Methods("POST")
 	router.Path("/receipt/{id}").HandlerFunc(Validate(getReceiptInfoHandler)).Methods("GET")
 
 	// Send the new router back
@@ -60,5 +61,21 @@ func createReceiptHandler(w http.ResponseWriter, r *http.Request) {
 
 func getReceiptInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// We will be responding with json
-	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Content-Type", "application/json")
+	// Pull out the receipt id
+	vars := mux.Vars(r)
+	receiptID, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	if err != nil {
+		res, _ := json.Marshal(Message{Message: "Error fetching receipt.", Reason: "internal_error"})
+		w.Write(res)
+		return
+	}
+
+	receipt := db.GetReceipt(receiptID)
+
+	res, _ := json.Marshal(receipt)
+	w.Write(res)
+	return
+
 }
