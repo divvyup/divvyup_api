@@ -23,6 +23,6 @@ RUN go get github.com/mattn/go-sqlite3
 RUN go get github.com/dgrijalva/jwt-go
 
 ENV DIVVYUP_API_MODE=demo
-ENV DIVVYUP_HOST=http://app.divvyup.doms.land
+ENV DIVVYUP_HOST=http://demo.divvyup.doms.land
 
 CMD [ "go", "run", "app.go" ]
