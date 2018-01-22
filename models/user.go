@@ -18,5 +18,5 @@ type User struct {
 type UserJSON struct {
 	Username string  `json:"name"`
 	Balance  float64 `json:"balance,omitempty"`
-	Groups   []int64 `json:"groups"`
+	Groups   []int64 `json:"groups,omitempty"`
 }
