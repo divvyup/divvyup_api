@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -84,6 +85,7 @@ func getGroupInfoHandler(w http.ResponseWriter, r *http.Request) {
 	groupID, err := strconv.ParseInt(vars["id"], 10, 64)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		// We couldn't parse out the id
 		res, _ := json.Marshal(Message{Message: "Invalid group ID.", Reason: "invalid_id"})
 		w.Write(res)

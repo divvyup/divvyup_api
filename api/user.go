@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/domtheporcupine/divvyup_api/db"
+
 	"github.com/domtheporcupine/divvyup_api/models"
 
 	"github.com/gorilla/mux"
@@ -24,7 +26,8 @@ func AddUserRoutes(router *mux.Router) *mux.Router {
 
 func getUserInfoHandler(w http.ResponseWriter, req *http.Request) {
 	usr, _ := req.Context().Value(models.User{}).(models.User)
-	res, _ := json.Marshal(models.UserJSON{Username: usr.Username})
+	groups := db.IsMemberOf(usr.ID)
+	res, _ := json.Marshal(models.UserJSON{Username: usr.Username, Groups: groups})
 	w.Write(res)
 	return
 }
