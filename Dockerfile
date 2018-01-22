@@ -11,6 +11,7 @@ WORKDIR /go/src/github.com/domtheporcupine/divvyup_api
 COPY api/ ./api
 COPY config/ ./config
 COPY models/ ./models
+COPY examlpes/ ./examples
 COPY db/ ./db
 COPY app.go .
 COPY schema.dev.sql .
