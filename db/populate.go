@@ -9,7 +9,7 @@ import (
 // This is starting to look and more like a test
 // file but we are going to leave it for now
 
-var usernames = []string{"dom", "brandon", "kristiana", "michaela", "me"}
+var usernames = []string{"dom", "brandon", "kristiana", "michaela", "user"}
 var passwords = []string{"bestpassword", "secure_password", "even_more_secure_password", "security_expert", "password"}
 var userids = []int64{}
 
