@@ -2,6 +2,8 @@ package db
 
 import (
 	"log"
+
+	"github.com/domtheporcupine/divvyup_api/models"
 )
 
 /*
@@ -62,7 +64,7 @@ func BelongToGroup(gid int64) []int64 {
 
 	for rows.Next() {
 		var nid int64
-		if err := rows.Scan(&nid); err != nil {
+		if err := rows.Scan(&nid); err == nil {
 			rids = append(rids, nid)
 		}
 	}
@@ -95,4 +97,35 @@ func BelongToUser(uid int64, rid int64) bool {
 
 	return false
 
+}
+
+/*
+	GetReceipt is a function that simply returns
+	the important information about a receipt
+*/
+func GetReceipt(rid int64) models.ReceiptJSON {
+	var receipt = models.ReceiptJSON{}
+	// Sanity check
+	if !ValidID(rid) {
+		return receipt
+	}
+	// First we need to get all items that belong to
+	// the receipt
+	rows, err := db.Query("select id,name,price from items where receiptid = ?", rid)
+
+	CheckErr(err)
+	defer rows.Close()
+
+	for rows.Next() {
+		var item = models.Item{}
+		if err := rows.Scan(&item.ID, &item.Name, &item.Price); err == nil {
+			receipt.Items = append(receipt.Items, item)
+		}
+	}
+
+	if err != nil {
+		return receipt
+	}
+
+	return receipt
 }
