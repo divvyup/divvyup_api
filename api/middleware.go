@@ -120,7 +120,7 @@ func CORS(page Middleware) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// We will be responding with json
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", config.Host())
+		w.Header().Set("Access-Control-Allow-Origin", "http://demo.divvyup.doms.land")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Request-Headers", "X-Requested-With")
 		npage := http.HandlerFunc(page)
